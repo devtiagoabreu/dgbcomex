@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linha Premium - DGB Comex | Mostruário Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fabric-sample {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .fabric-sample:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        .carousel-item {
+            min-width: 250px;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                        DGB
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-800">DGB Comex</h1>
+                </div>
+                <a href="#" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Voltar ao site principal
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-50 to-indigo-50 py-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Linha Premium</h2>
+                    <p class="text-lg text-gray-600 mb-6">Tecidos de alta qualidade para confecções sofisticadas e duráveis. Perfeito para moda casual e profissional.</p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">100% Algodão</span>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Resistente</span>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Respirável</span>
+                    </div>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition flex items-center">
+                        <i class="fas fa-download mr-2"></i> Ficha Técnica
+                    </button>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <img src="https://images.unsplash.com/photo-1561526116-e2460f4d40a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Linha Premium" class="w-full h-auto rounded-lg fade-in">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specifications -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Especificações Técnicas</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600">
+                        <i class="fas fa-ruler-combined text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Composição</h3>
+                    <p class="text-gray-600">100% algodão penteado de fibra longa, garantindo maciez e durabilidade.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600">
+                        <i class="fas fa-weight-hanging text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Gramatura</h3>
+                    <p class="text-gray-600">180g/m² - Peso ideal para confecções que exigem estrutura sem perder o conforto.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4 text-purple-600">
+                        <i class="fas fa-tshirt text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Aplicações</h3>
+                    <p class="text-gray-600">Camisas sociais, blusas, vestidos leves e peças que exigem caimento impecável.</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 bg-blue-50 p-6 rounded-xl">
+                <h3 class="font-semibold text-lg mb-4 text-blue-800">Cuidados Especiais</h3>
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-temperature-low text-blue-600 mr-2"></i>
+                        <span class="text-gray-700">Lavar a 30°C</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-times-circle text-blue-600 mr-2"></i>
+                        <span class="text-gray-700">Não usar alvejante</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-tshirt text-blue-600 mr-2"></i>
+                        <span class="text-gray-700">Passar a ferro médio</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-wind text-blue-600 mr-2"></i>
+                        <span class="text-gray-700">Secar à sombra</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Color Options -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Paleta de Cores Disponíveis</h2>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <div class="text-center">
+                    <div class="color-swatch bg-white border border-gray-200 mx-auto mb-2" title="Branco Neve"></div>
+                    <span class="text-sm text-gray-600">Branco Neve</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-gray-200 mx-auto mb-2" title="Cinza Claro"></div>
+                    <span class="text-sm text-gray-600">Cinza Claro</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-gray-400 mx-auto mb-2" title="Cinza Médio"></div>
+                    <span class="text-sm text-gray-600">Cinza Médio</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-gray-700 mx-auto mb-2" title="Cinza Escuro"></div>
+                    <span class="text-sm text-gray-600">Cinza Escuro</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-black mx-auto mb-2" title="Preto Profundo"></div>
+                    <span class="text-sm text-gray-600">Preto Profundo</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-blue-100 mx-auto mb-2" title="Azul Claro"></div>
+                    <span class="text-sm text-gray-600">Azul Claro</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-blue-400 mx-auto mb-2" title="Azul Médio"></div>
+                    <span class="text-sm text-gray-600">Azul Médio</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-blue-700 mx-auto mb-2" title="Azul Marinho"></div>
+                    <span class="text-sm text-gray-600">Azul Marinho</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-red-400 mx-auto mb-2" title="Vermelho"></div>
+                    <span class="text-sm text-gray-600">Vermelho</span>
+                </div>
+                <div class="text-center">
+                    <div class="color-swatch bg-green-500 mx-auto mb-2" title="Verde Esmeralda"></div>
+                    <span class="text-sm text-gray-600">Verde Esmeralda</span>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-gray-600 mb-4">* As cores podem variar ligeiramente dependendo da configuração do seu monitor.</p>
+                <button class="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-md transition flex items-center mx-auto">
+                    <i class="fas fa-palette mr-2"></i> Solicitar Cartela de Cores
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fabric Samples Carousel -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Amostras da Linha Premium</h2>
+            <p class="text-gray-600 mb-12 text-center max-w-2xl mx-auto">Explore nossa coleção de tecidos através das amostras abaixo. Cada peça foi cuidadosamente selecionada para oferecer o melhor em qualidade e textura.</p>
+            
+            <div class="relative">
+                <div class="overflow-hidden">
+                    <div id="carousel" class="flex overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory" style="scrollbar-width: none;">
+                        <!-- Carousel Items -->
+                        <div class="carousel-item flex-shrink-0 snap-start px-2">
+                            <div class="fabric-sample bg-white p-4 rounded-lg shadow-md w-64 h-80 flex flex-col">
+                                <div class="bg-gray-100 rounded-t-lg h-48 mb-4 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Azul Marinho" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Azul Marinho</h3>
+                                <p class="text-sm text-gray-500 mb-3">Código: DGB-PR-001</p>
+                                <button class="mt-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded text-sm transition">
+                                    Ver detalhes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item flex-shrink-0 snap-start px-2">
+                            <div class="fabric-sample bg-white p-4 rounded-lg shadow-md w-64 h-80 flex flex-col">
+                                <div class="bg-gray-100 rounded-t-lg h-48 mb-4 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Branco Neve" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Branco Neve</h3>
+                                <p class="text-sm text-gray-500 mb-3">Código: DGB-PR-002</p>
+                                <button class="mt-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded text-sm transition">
+                                    Ver detalhes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item flex-shrink-0 snap-start px-2">
+                            <div class="fabric-sample bg-white p-4 rounded-lg shadow-md w-64 h-80 flex flex-col">
+                                <div class="bg-gray-100 rounded-t-lg h-48 mb-4 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1520367445093-50dc08a59d9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Cinza Claro" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Cinza Claro</h3>
+                                <p class="text-sm text-gray-500 mb-3">Código: DGB-PR-003</p>
+                                <button class="mt-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded text-sm transition">
+                                    Ver detalhes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item flex-shrink-0 snap-start px-2">
+                            <div class="fabric-sample bg-white p-4 rounded-lg shadow-md w-64 h-80 flex flex-col">
+                                <div class="bg-gray-100 rounded-t-lg h-48 mb-4 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1561526116-e2460f4d40a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Verde Esmeralda" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Verde Esmeralda</h3>
+                                <p class="text-sm text-gray-500 mb-3">Código: DGB-PR-004</p>
+                                <button class="mt-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded text-sm transition">
+                                    Ver detalhes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item flex-shrink-0 snap-start px-2">
+                            <div class="fabric-sample bg-white p-4 rounded-lg shadow-md w-64 h-80 flex flex-col">
+                                <div class="bg-gray-100 rounded-t-lg h-48 mb-4 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Tecido Vermelho" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Vermelho</h3>
+                                <p class="text-sm text-gray-500 mb-3">Código: DGB-PR-005</p>
+                                <button class="mt-auto bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded text-sm transition">
+                                    Ver detalhes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="prevBtn" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full w-10 h-10 shadow-md flex items-center justify-center text-gray-600 hover:text-blue-600 transition -ml-5">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="nextBtn" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full w-10 h-10 shadow-md flex items-center justify-center text-gray-600 hover:text-blue-600 transition -mr-5">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="flex justify-center mt-8">
+                <div class="flex space-x-2">
+                    <button class="w-3 h-3 rounded-full bg-blue-600 dot-btn"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 dot-btn"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 dot-btn"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 dot-btn"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 dot-btn"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-blue-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold mb-4">Interessado na nossa Linha Premium?</h2>
+            <p class="text-blue-100 mb-8 max-w-2xl mx-auto">Entre em contato com nosso time de vendas para solicitar amostras físicas, orçamentos ou informações adicionais sobre nossos tecidos.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="bg-white hover:bg-gray-100 text-blue-600 px-6 py-3 rounded-md font-medium transition flex items-center justify-center">
+                    <i class="fas fa-envelope mr-2"></i> Enviar Mensagem
+                </button>
+                <button class="bg-transparent hover:bg-blue-700 border border-white text-white px-6 py-3 rounded-md font-medium transition flex items-center justify-center">
+                    <i class="fas fa-phone-alt mr-2"></i> (11) 1234-5678
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">DGB Comex</h3>
+                    <p class="text-gray-400">Importadora de tecidos de alta qualidade para o mercado nacional.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Contato</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-400"></i>
+                            Av. Paulista, 1000 - São Paulo/SP
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-blue-400"></i>
+                            (11) 1234-5678
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-blue-400"></i>
+                            contato@dgbcomex.com.br
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Links Úteis</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Site Principal</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Catálogo Completo</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Política de Qualidade</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Redes Sociais</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-400 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-pink-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-blue-700 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 DGB Comex. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Carousel functionality
+        const carousel = document.getElementById('carousel');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dots = document.querySelectorAll('.dot-btn');
+        
+        let currentIndex = 0;
+        const itemWidth = 250; // Width of each carousel item
+        const gap = 16; // Gap between items
+        
+        function updateCarousel() {
+            const scrollPosition = currentIndex * (itemWidth + gap);
+            carousel.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.remove('bg-gray-300');
+                    dot.classList.add('bg-blue-600');
+                } else {
+                    dot.classList.remove('bg-blue-600');
+                    dot.classList.add('bg-gray-300');
+                }
+            });
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < dots.length - 1) {
+                currentIndex++;
+                updateCarousel();
+            }
+        });
+        
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
+        
+        // Color swatch hover effect
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        colorSwatches.forEach(swatch => {
+            swatch.addEventListener('mouseenter', () => {
+                const colorName = swatch.getAttribute('title');
+                // You could add functionality to show the color name in a tooltip
+            });
+        });
+    </script>
+</body>
+</html>

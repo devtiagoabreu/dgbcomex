@@ -677,9 +677,9 @@
                         Cadastre-se para receber novidades e promoções.
                     </p>
                     <form id="newsletter-form" class="flex">
-                        <input type="email" placeholder="Seu e-mail" class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-800 w-full">
+                        <input type="email" id="newsletter-email" placeholder="Seu e-mail" required class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-800 w-full">
                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-r-lg transition">
-                            <i class="fas fa-paper-plane"></i>
+                          <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
                 </div>
@@ -751,17 +751,25 @@
         });
 
         // Form de cadastro da newsletter
-        document.getElementById("newsletter-form").addEventListener("submit", function (e) {
-            e.preventDefault(); // Impede envio tradicional
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("newsletter-form");
 
-            const email = document.getElementById("newsletter-email").value;
+            form.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-            const text = `Efetuar cadastro na newsletter:\n\n*Email:* ${email}`;
-            const encodedMessage = encodeURIComponent(text);
-            const phoneNumber = "5547991524049"; // Substitua pelo número do WhatsApp desejado
-            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            const email = document.getElementById("newsletter-email").value.trim();
 
-            window.open(whatsappURL, '_blank');
+            if (!email) {
+                alert("Por favor, insira um e-mail válido.");
+                return;
+            }
+
+            const text = `Novo cadastro na newsletter:%0A%0A*Email:* ${email}`;
+            const phoneNumber = "554730454006"; // Substitua pelo número correto
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${text}`;
+
+            window.open(whatsappURL, "_blank");
+            });
         });
 
         // Smooth scrolling for anchor links

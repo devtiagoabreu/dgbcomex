@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decorador de Ambientes com Tecidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .room-container {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .furniture {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .furniture:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        
+        .fabric-pattern {
+            background-image: url('https://www.transparenttextures.com/patterns/fabric-plaid.png');
+        }
+        
+        .selected {
+            border: 3px solid #4f46e5;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
+        }
+        
+        .fabric-thumbnail {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .fabric-thumbnail:hover {
+            transform: scale(1.1);
+            border-color: #4f46e5;
+        }
+        
+        .fabric-thumbnail.selected-fabric {
+            border: 3px solid #4f46e5;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center text-indigo-800 mb-2">Decorador de Ambientes</h1>
+        <p class="text-center text-gray-600 mb-8">Escolha tecidos para decorar seu ambiente</p>
+        
+        <!-- Room Selection -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Escolha o Ambiente</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="room-option cursor-pointer transition-all duration-300 hover:scale-105" data-room="living">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Sala de Estar" class="w-64 h-48 object-cover rounded-lg mb-2">
+                    <p class="text-center font-medium">Sala de Estar</p>
+                </div>
+                <div class="room-option cursor-pointer transition-all duration-300 hover:scale-105" data-room="bedroom">
+                    <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Quarto" class="w-64 h-48 object-cover rounded-lg mb-2">
+                    <p class="text-center font-medium">Quarto</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Area (hidden initially) -->
+        <div id="game-area" class="hidden">
+            <!-- Room Display -->
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="flex-1">
+                    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Ambiente selecionado: <span id="selected-room-name"></span></h2>
+                        <p class="text-gray-600 mb-4">Clique em um móvel para selecioná-lo e depois escolha um tecido</p>
+                        
+                        <div id="room-container" class="room-container rounded-lg overflow-hidden">
+                            <!-- Furniture will be added here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fabric Selection -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Catálogo de Tecidos</h2>
+                        
+                        <div class="mb-4">
+                            <h3 class="font-medium text-gray-700 mb-2">Móvel selecionado:</h3>
+                            <p id="selected-furniture" class="text-indigo-600 font-semibold">Nenhum móvel selecionado</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="font-medium text-gray-700 mb-2">Categorias:</h3>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <button class="fabric-category px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm" data-category="all">Todos</button>
+                                <button class="fabric-category px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm" data-category="solid">Lisos</button>
+                                <button class="fabric-category px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm" data-category="pattern">Estampados</button>
+                                <button class="fabric-category px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm" data-category="texture">Texturizados</button>
+                            </div>
+                        </div>
+                        
+                        <div id="fabric-options" class="grid grid-cols-3 gap-3">
+                            <!-- Fabric options will be added here by JavaScript -->
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button id="reset-btn" class="w-full bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">
+                                <i class="fas fa-undo mr-2"></i> Reiniciar Decoração
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Save Design -->
+            <div class="mt-8 text-center">
+                <button id="save-btn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition">
+                    <i class="fas fa-save mr-2"></i> Salvar Minha Decoração
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results (hidden initially) -->
+        <div id="results" class="hidden mt-12 bg-white rounded-lg shadow-md p-8 text-center">
+            <h2 class="text-3xl font-bold text-indigo-800 mb-4">Sua Decoração Finalizada!</h2>
+            <p class="text-gray-600 mb-6">Aqui está o ambiente que você decorou com nossos tecidos</p>
+            
+            <div id="final-room" class="room-container mx-auto mb-8">
+                <!-- Final decorated room will be shown here -->
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button id="new-design-btn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
+                    <i class="fas fa-plus mr-2"></i> Criar Nova Decoração
+                </button>
+                <button id="download-btn" class="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition">
+                    <i class="fas fa-download mr-2"></i> Baixar Imagem
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        const fabrics = [
+            { id: 1, name: "Azul Royal", category: "solid", image: "https://images.unsplash.com/photo-1534996858221-380b92700493?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1931&q=80" },
+            { id: 2, name: "Verde Esmeralda", category: "solid", image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80" },
+            { id: 3, name: "Vermelho Vinho", category: "solid", image: "https://images.unsplash.com/photo-1551489186-cf8726f514f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 4, name: "Bege Claro", category: "solid", image: "https://images.unsplash.com/photo-1618221195710-dd6b7fa356f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" },
+            { id: 5, name: "Cinza Chumbo", category: "solid", image: "https://images.unsplash.com/photo-1562547256-2c5ee93b60b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80" },
+            { id: 6, name: "Listras Azuis", category: "pattern", image: "https://images.unsplash.com/photo-1526113438747-122d6ac82dfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1933&q=80" },
+            { id: 7, name: "Floral Vintage", category: "pattern", image: "https://images.unsplash.com/photo-1531104985437-603dab0f84bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2089&q=80" },
+            { id: 8, name: "Geométrico Moderno", category: "pattern", image: "https://images.unsplash.com/photo-1542332213-9d5d11b6e96a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 9, name: "Xadrez Clássico", category: "pattern", image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 10, name: "Ponto de Diamante", category: "pattern", image: "https://images.unsplash.com/photo-1563170351-82e9a4e147b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 11, name: "Veludo Cinza", category: "texture", image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 12, name: "Linho Natural", category: "texture", image: "https://images.unsplash.com/photo-1618354691379-6b8b5b472f33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" },
+            { id: 13, name: "Couro Sintético", category: "texture", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2032&q=80" },
+            { id: 14, name: "Cetim Brilhante", category: "texture", image: "https://images.unsplash.com/photo-1554412933-514a83d2f374?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80" },
+            { id: 15, name: "Tweed Elegante", category: "texture", image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" }
+        ];
+
+        const rooms = {
+            living: {
+                name: "Sala de Estar",
+                background: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                furniture: [
+                    { id: "sofa", name: "Sofá", top: "50%", left: "30%", width: "40%", height: "30%", originalImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "armchair", name: "Poltrona", top: "55%", left: "75%", width: "20%", height: "25%", originalImage: "https://images.unsplash.com/photo-1598300042247-d088f8ab3c91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1935&q=80" },
+                    { id: "cushion1", name: "Almofada 1", top: "45%", left: "35%", width: "10%", height: "8%", originalImage: "https://images.unsplash.com/photo-1579965343470-2a07ab5c8b4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "cushion2", name: "Almofada 2", top: "45%", left: "50%", width: "10%", height: "8%", originalImage: "https://images.unsplash.com/photo-1579965343470-2a07ab5c8b4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "rug", name: "Tapete", top: "70%", left: "40%", width: "30%", height: "15%", originalImage: "https://images.unsplash.com/photo-1579632652768-6cb9dcf85912?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" }
+                ]
+            },
+            bedroom: {
+                name: "Quarto",
+                background: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                furniture: [
+                    { id: "bed", name: "Cama", top: "50%", left: "30%", width: "50%", height: "35%", originalImage: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "pillow1", name: "Travesseiro 1", top: "45%", left: "35%", width: "12%", height: "10%", originalImage: "https://images.unsplash.com/photo-1579656592043-50784ed3e122?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "pillow2", name: "Travesseiro 2", top: "45%", left: "50%", width: "12%", height: "10%", originalImage: "https://images.unsplash.com/photo-1579656592043-50784ed3e122?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "blanket", name: "Cobertor", top: "60%", left: "40%", width: "30%", height: "15%", originalImage: "https://images.unsplash.com/photo-1616627561839-074385245ff6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+                    { id: "armchair", name: "Poltrona", top: "55%", left: "75%", width: "20%", height: "25%", originalImage: "https://images.unsplash.com/photo-1598300042247-d088f8ab3c91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1935&q=80" }
+                ]
+            }
+        };
+
+        // Game State
+        let currentRoom = null;
+        let selectedFurniture = null;
+        let selectedFabric = null;
+        let furnitureWithFabrics = {};
+
+        // DOM Elements
+        const gameArea = document.getElementById('game-area');
+        const resultsArea = document.getElementById('results');
+        const roomContainer = document.getElementById('room-container');
+        const selectedRoomName = document.getElementById('selected-room-name');
+        const selectedFurnitureDisplay = document.getElementById('selected-furniture');
+        const fabricOptions = document.getElementById('fabric-options');
+        const finalRoom = document.getElementById('final-room');
+        const resetBtn = document.getElementById('reset-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const newDesignBtn = document.getElementById('new-design-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const roomOptions = document.querySelectorAll('.room-option');
+        const fabricCategories = document.querySelectorAll('.fabric-category');
+
+        // Event Listeners
+        roomOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                currentRoom = rooms[option.dataset.room];
+                startGame();
+            });
+        });
+
+        fabricCategories.forEach(category => {
+            category.addEventListener('click', () => {
+                // Update active category button
+                fabricCategories.forEach(btn => {
+                    btn.classList.remove('bg-indigo-100', 'text-indigo-800');
+                    btn.classList.add('bg-gray-100', 'text-gray-800');
+                });
+                category.classList.remove('bg-gray-100', 'text-gray-800');
+                category.classList.add('bg-indigo-100', 'text-indigo-800');
+                
+                // Filter fabrics
+                const categoryType = category.dataset.category;
+                displayFabrics(categoryType);
+            });
+        });
+
+        resetBtn.addEventListener('click', resetFurniture);
+        saveBtn.addEventListener('click', saveDesign);
+        newDesignBtn.addEventListener('click', () => {
+            resultsArea.classList.add('hidden');
+            gameArea.classList.remove('hidden');
+        });
+        downloadBtn.addEventListener('click', downloadDesign);
+
+        // Game Functions
+        function startGame() {
+            // Show game area
+            gameArea.classList.remove('hidden');
+            resultsArea.classList.add('hidden');
+            
+            // Set room name
+            selectedRoomName.textContent = currentRoom.name;
+            
+            // Setup room
+            setupRoom();
+            
+            // Display all fabrics initially
+            displayFabrics('all');
+            
+            // Reset furniture selections
+            selectedFurniture = null;
+            selectedFabric = null;
+            furnitureWithFabrics = {};
+        }
+
+        function setupRoom() {
+            // Clear previous room
+            roomContainer.innerHTML = '';
+            roomContainer.style.backgroundImage = `url('${currentRoom.background}')`;
+            
+            // Add furniture to room
+            currentRoom.furniture.forEach(item => {
+                const furnitureElement = document.createElement('div');
+                furnitureElement.className = 'furniture';
+                furnitureElement.id = `furniture-${item.id}`;
+                furnitureElement.style.top = item.top;
+                furnitureElement.style.left = item.left;
+                furnitureElement.style.width = item.width;
+                furnitureElement.style.height = item.height;
+                furnitureElement.style.backgroundImage = `url('${item.originalImage}')`;
+                furnitureElement.style.backgroundSize = 'cover';
+                furnitureElement.style.backgroundPosition = 'center';
+                
+                // Add click event
+                furnitureElement.addEventListener('click', () => {
+                    selectFurniture(item.id, furnitureElement);
+                });
+                
+                roomContainer.appendChild(furnitureElement);
+            });
+        }
+
+        function selectFurniture(furnitureId, element) {
+            // Deselect previously selected furniture
+            if (selectedFurniture) {
+                document.getElementById(`furniture-${selectedFurniture}`).classList.remove('selected');
+            }
+            
+            // Select new furniture
+            selectedFurniture = furnitureId;
+            element.classList.add('selected');
+            
+            // Update display
+            const furnitureItem = currentRoom.furniture.find(item => item.id === furnitureId);
+            selectedFurnitureDisplay.textContent = furnitureItem.name;
+            
+            // Highlight selected fabric if this furniture already has one
+            if (furnitureWithFabrics[furnitureId]) {
+                const fabricElements = document.querySelectorAll('.fabric-thumbnail');
+                fabricElements.forEach(el => {
+                    el.classList.remove('selected-fabric');
+                    if (el.dataset.fabricId == furnitureWithFabrics[furnitureId]) {
+                        el.classList.add('selected-fabric');
+                        selectedFabric = furnitureWithFabrics[furnitureId];
+                    }
+                });
+            } else {
+                // Deselect any selected fabric
+                document.querySelectorAll('.fabric-thumbnail').forEach(el => {
+                    el.classList.remove('selected-fabric');
+                });
+                selectedFabric = null;
+            }
+        }
+
+        function displayFabrics(category) {
+            fabricOptions.innerHTML = '';
+            
+            const filteredFabrics = category === 'all' 
+                ? fabrics 
+                : fabrics.filter(fabric => fabric.category === category);
+            
+            filteredFabrics.forEach(fabric => {
+                const fabricElement = document.createElement('div');
+                fabricElement.className = 'fabric-thumbnail';
+                fabricElement.dataset.fabricId = fabric.id;
+                fabricElement.title = fabric.name;
+                fabricElement.style.backgroundImage = `url('${fabric.image}')`;
+                fabricElement.style.backgroundSize = 'cover';
+                fabricElement.style.backgroundPosition = 'center';
+                
+                // Check if this fabric is selected for current furniture
+                if (selectedFurniture && furnitureWithFabrics[selectedFurniture] == fabric.id) {
+                    fabricElement.classList.add('selected-fabric');
+                }
+                
+                // Add click event
+                fabricElement.addEventListener('click', () => {
+                    selectFabric(fabric.id, fabricElement);
+                });
+                
+                fabricOptions.appendChild(fabricElement);
+            });
+        }
+
+        function selectFabric(fabricId, element) {
+            if (!selectedFurniture) {
+                alert('Por favor, selecione um móvel primeiro');
+                return;
+            }
+            
+            // Deselect previously selected fabric
+            document.querySelectorAll('.fabric-thumbnail').forEach(el => {
+                el.classList.remove('selected-fabric');
+            });
+            
+            // Select new fabric
+            selectedFabric = fabricId;
+            element.classList.add('selected-fabric');
+            
+            // Apply fabric to furniture
+            applyFabricToFurniture(selectedFurniture, fabricId);
+        }
+
+        function applyFabricToFurniture(furnitureId, fabricId) {
+            // Save this combination
+            furnitureWithFabrics[furnitureId] = fabricId;
+            
+            // Find the fabric
+            const fabric = fabrics.find(f => f.id == fabricId);
+            
+            // Apply to furniture element
+            const furnitureElement = document.getElementById(`furniture-${furnitureId}`);
+            furnitureElement.style.backgroundImage = `url('${fabric.image}')`;
+        }
+
+        function resetFurniture() {
+            if (!selectedFurniture) {
+                alert('Por favor, selecione um móvel primeiro');
+                return;
+            }
+            
+            // Remove fabric from this furniture
+            delete furnitureWithFabrics[selectedFurniture];
+            
+            // Reset to original image
+            const furnitureItem = currentRoom.furniture.find(item => item.id === selectedFurniture);
+            const furnitureElement = document.getElementById(`furniture-${selectedFurniture}`);
+            furnitureElement.style.backgroundImage = `url('${furnitureItem.originalImage}')`;
+            
+            // Deselect fabric
+            document.querySelectorAll('.fabric-thumbnail').forEach(el => {
+                el.classList.remove('selected-fabric');
+            });
+            selectedFabric = null;
+        }
+
+        function saveDesign() {
+            // Hide game area and show results
+            gameArea.classList.add('hidden');
+            resultsArea.classList.remove('hidden');
+            
+            // Create final room display
+            finalRoom.innerHTML = '';
+            finalRoom.style.backgroundImage = `url('${currentRoom.background}')`;
+            
+            // Add all furniture with their fabrics
+            currentRoom.furniture.forEach(item => {
+                const furnitureElement = document.createElement('div');
+                furnitureElement.className = 'furniture';
+                furnitureElement.style.top = item.top;
+                furnitureElement.style.left = item.left;
+                furnitureElement.style.width = item.width;
+                furnitureElement.style.height = item.height;
+                
+                // Use custom fabric if applied, otherwise original image
+                if (furnitureWithFabrics[item.id]) {
+                    const fabric = fabrics.find(f => f.id == furnitureWithFabrics[item.id]);
+                    furnitureElement.style.backgroundImage = `url('${fabric.image}')`;
+                } else {
+                    furnitureElement.style.backgroundImage = `url('${item.originalImage}')`;
+                }
+                
+                furnitureElement.style.backgroundSize = 'cover';
+                furnitureElement.style.backgroundPosition = 'center';
+                
+                finalRoom.appendChild(furnitureElement);
+            });
+        }
+
+        function downloadDesign() {
+            // In a real implementation, you would use html2canvas or similar library
+            // to convert the final room div to an image for download
+            alert('Na implementação real, esta função converteria o ambiente em uma imagem para download.');
+        }
+
+        // Initialize with first category selected
+        document.querySelector('.fabric-category[data-category="all"]').classList.remove('bg-gray-100', 'text-gray-800');
+        document.querySelector('.fabric-category[data-category="all"]').classList.add('bg-indigo-100', 'text-indigo-800');
+    </script>
+</body>
+</html>

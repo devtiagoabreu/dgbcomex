@@ -1,6 +1,6 @@
 # README - Site da DGB COMEX  
 
-![Logo DGB COMEX](https://dgbcomex.vercel.app/images/logoAltaBranco.png)  
+<p align="center"> <img src="https://dgbcomex.vercel.app/images/logoAltaBranco.png" alt="Logo DGB COMEX" width="200" style="background-color: #001F3F; padding: 20px; border-radius: 8px;"> </p>
 
 ## 📌 Visão Geral  
 
@@ -71,7 +71,7 @@ Para dúvidas sobre o site ou solicitações de desenvolvimento, entre em contat
 
 # README - DGB COMEX Website
 
-![DGB COMEX Logo](https://dgbcomex.vercel.app/images/logoAltaBranco.png)
+<p align="center"> <img src="https://dgbcomex.vercel.app/images/logoAltaBranco.png" alt="Logo DGB COMEX" width="200" style="background-color: #001F3F; padding: 20px; border-radius: 8px;"> </p>
 
 ## 📌 Overview
 

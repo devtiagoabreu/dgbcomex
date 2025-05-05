@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Container Unloading Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container-ship {
+            background-image: url('https://images.unsplash.com/photo-1536520005768-1bd7876f6a76?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .container-box {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .fabric-item {
+            transition: all 0.2s ease;
+        }
+        
+        .fabric-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        .dock-area {
+            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb),
+                              linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes shake {
+            10%, 90% { transform: translateX(-1px); }
+            20%, 80% { transform: translateX(2px); }
+            30%, 50%, 70% { transform: translateX(-4px); }
+            40%, 60% { transform: translateX(4px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Game Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-900 mb-2">Fabric Container Unloader</h1>
+            <p class="text-xl text-gray-600">Unload containers quickly and efficiently to keep the supply chain moving!</p>
+            
+            <div class="mt-6 flex justify-center gap-6">
+                <div class="bg-blue-100 text-blue-800 px-6 py-3 rounded-lg shadow">
+                    <div class="text-2xl font-bold" id="score">0</div>
+                    <div class="text-sm">Points</div>
+                </div>
+                <div class="bg-green-100 text-green-800 px-6 py-3 rounded-lg shadow">
+                    <div class="text-2xl font-bold" id="time">60</div>
+                    <div class="text-sm">Seconds</div>
+                </div>
+                <div class="bg-yellow-100 text-yellow-800 px-6 py-3 rounded-lg shadow">
+                    <div class="text-2xl font-bold" id="containers">0</div>
+                    <div class="text-sm">Containers</div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Game Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Ship with Containers -->
+            <div class="lg:col-span-2">
+                <div class="container-ship bg-gray-800 rounded-xl shadow-xl p-6 h-full min-h-[500px] relative overflow-hidden">
+                    <h2 class="text-xl font-bold text-white mb-4">Cargo Ship <span id="containers-left">5</span>/5</h2>
+                    
+                    <div class="progress-bar-container bg-gray-700 rounded-full h-4 mb-6">
+                        <div id="unload-progress" class="progress-bar bg-blue-500 h-full rounded-full" style="width: 0%"></div>
+                    </div>
+                    
+                    <div id="containers-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <!-- Containers will be loaded here by JavaScript -->
+                    </div>
+                    
+                    <div class="absolute bottom-4 left-0 right-0 text-center">
+                        <button id="next-container-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-lg transition disabled:opacity-50" disabled>
+                            <i class="fas fa-ship mr-2"></i> Next Container
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dock Area -->
+            <div class="lg:col-span-1">
+                <div class="dock-area bg-gray-200 rounded-xl shadow-xl p-6 h-full min-h-[500px]">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Dock Warehouse</h2>
+                    
+                    <div class="bg-white rounded-lg p-4 mb-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Current Container</h3>
+                        <div id="current-container" class="text-center py-4">
+                            <p class="text-gray-500">No container selected</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Fabric Types to Sort</h3>
+                        <div id="fabric-targets" class="grid grid-cols-2 gap-3">
+                            <!-- Fabric targets will be loaded here by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-white rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Instructions</h3>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li><i class="fas fa-box-open text-blue-500 mr-2"></i> Click on a container to unload it</li>
+                            <li><i class="fas fa-tshirt text-green-500 mr-2"></i> Drag fabrics to matching categories</li>
+                            <li><i class="fas fa-clock text-yellow-500 mr-2"></i> Unload as many containers as you can in 60 seconds</li>
+                            <li><i class="fas fa-star text-purple-500 mr-2"></i> Earn bonus points for speed and accuracy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Controls -->
+        <div class="mt-8 text-center">
+            <button id="start-game-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg shadow-lg text-lg font-semibold transition">
+                <i class="fas fa-play mr-2"></i> Start Game
+            </button>
+            <button id="reset-game-btn" class="ml-4 bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg shadow-lg text-lg font-semibold transition">
+                <i class="fas fa-redo mr-2"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        const fabricTypes = [
+            { id: 1, name: "Silk", color: "bg-pink-100", text: "text-pink-800", icon: "fa-spa" },
+            { id: 2, name: "Cotton", color: "bg-blue-100", text: "text-blue-800", icon: "fa-cloud" },
+            { id: 3, name: "Linen", color: "bg-green-100", text: "text-green-800", icon: "fa-leaf" },
+            { id: 4, name: "Wool", color: "bg-yellow-100", text: "text-yellow-800", icon: "fa-cut" },
+            { id: 5, name: "Velvet", color: "bg-purple-100", text: "text-purple-800", icon: "fa-vector-square" },
+            { id: 6, name: "Denim", color: "bg-indigo-100", text: "text-indigo-800", icon: "fa-tshirt" }
+        ];
+
+        const fabricItems = [
+            { id: 1, name: "Italian Silk", type: 1, image: "https://images.unsplash.com/photo-1534996858221-380b92700493?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1931&q=80" },
+            { id: 2, name: "French Linen", type: 3, image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80" },
+            { id: 3, name: "Scottish Wool", type: 4, image: "https://images.unsplash.com/photo-1554412933-514a83d2f374?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80" },
+            { id: 4, name: "Venetian Velvet", type: 5, image: "https://images.unsplash.com/photo-1618221195710-dd6b7fa356f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" },
+            { id: 5, name: "Egyptian Cotton", type: 2, image: "https://images.unsplash.com/photo-1562547256-2c5ee93b60b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80" },
+            { id: 6, name: "Japanese Denim", type: 6, image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 7, name: "Indian Cotton", type: 2, image: "https://images.unsplash.com/photo-1542332213-9d5d11b6e96a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" },
+            { id: 8, name: "Thai Silk", type: 1, image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" }
+        ];
+
+        // Game State
+        let gameActive = false;
+        let score = 0;
+        let timeLeft = 60;
+        let containersUnloaded = 0;
+        let containersLeft = 5;
+        let currentContainer = null;
+        let timerInterval = null;
+        let currentContainerItems = [];
+        let correctlySorted = 0;
+        let totalItems = 0;
+
+        // DOM Elements
+        const scoreElement = document.getElementById('score');
+        const timeElement = document.getElementById('time');
+        const containersElement = document.getElementById('containers');
+        const containersLeftElement = document.getElementById('containers-left');
+        const containersGrid = document.getElementById('containers-grid');
+        const currentContainerElement = document.getElementById('current-container');
+        const fabricTargets = document.getElementById('fabric-targets');
+        const nextContainerBtn = document.getElementById('next-container-btn');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const resetGameBtn = document.getElementById('reset-game-btn');
+        const unloadProgress = document.getElementById('unload-progress');
+
+        // Initialize the game
+        function initGame() {
+            renderFabricTargets();
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            startGameBtn.addEventListener('click', startGame);
+            resetGameBtn.addEventListener('click', resetGame);
+            nextContainerBtn.addEventListener('click', loadNextContainer);
+        }
+
+        // Start the game
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            score = 0;
+            timeLeft = 60;
+            containersUnloaded = 0;
+            containersLeft = 5;
+            
+            updateUI();
+            loadNextContainer();
+            
+            // Start timer
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateUI();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+            
+            startGameBtn.disabled = true;
+            startGameBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            startGameBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        }
+
+        // Reset the game
+        function resetGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            
+            // Clear containers
+            containersGrid.innerHTML = '';
+            currentContainerElement.innerHTML = '<p class="text-gray-500">No container selected</p>';
+            currentContainer = null;
+            currentContainerItems = [];
+            
+            // Reset buttons
+            nextContainerBtn.disabled = true;
+            startGameBtn.disabled = false;
+            startGameBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            startGameBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            
+            // Reset progress
+            unloadProgress.style.width = '0%';
+        }
+
+        // End the game
+        function endGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            
+            // Show game over message
+            alert(`Game Over!\n\nYou unloaded ${containersUnloaded} containers and scored ${score} points!`);
+            
+            resetGame();
+        }
+
+        // Load the next container
+        function loadNextContainer() {
+            if (containersLeft <= 0) {
+                alert("No more containers left to unload!");
+                return;
+            }
+            
+            // Reset container state
+            currentContainerItems = [];
+            correctlySorted = 0;
+            currentContainerElement.innerHTML = '';
+            nextContainerBtn.disabled = true;
+            unloadProgress.style.width = '0%';
+            
+            // Create a new container with random fabrics
+            const containerSize = Math.floor(Math.random() * 3) + 3; // 3-5 items
+            totalItems = containerSize;
+            
+            for (let i = 0; i < containerSize; i++) {
+                const randomFabric = fabricItems[Math.floor(Math.random() * fabricItems.length)];
+                currentContainerItems.push({...randomFabric});
+            }
+            
+            // Display container contents
+            displayContainerContents();
+            
+            // Update UI
+            containersLeft--;
+            updateUI();
+        }
+
+        // Display container contents
+        function displayContainerContents() {
+            currentContainerElement.innerHTML = '';
+            
+            currentContainerItems.forEach((item, index) => {
+                const fabricElement = document.createElement('div');
+                fabricElement.className = 'fabric-item inline-block m-2 cursor-grab';
+                fabricElement.draggable = true;
+                fabricElement.dataset.id = item.id;
+                fabricElement.dataset.type = item.type;
+                fabricElement.dataset.index = index;
+                
+                fabricElement.innerHTML = `
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-lg shadow bg-cover bg-center relative overflow-hidden" 
+                         style="background-image: url('${item.image}')">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
+                            ${item.name}
+                        </div>
+                    </div>
+                `;
+                
+                // Add drag start event
+                fabricElement.addEventListener('dragstart', handleDragStart);
+                
+                currentContainerElement.appendChild(fabricElement);
+            });
+            
+            // Add drop targets
+            addDropTargets();
+        }
+
+        // Handle drag start
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.index);
+            e.target.classList.add('opacity-50');
+        }
+
+        // Add drop targets for fabric types
+        function addDropTargets() {
+            fabricTargets.querySelectorAll('.fabric-target').forEach(target => {
+                target.addEventListener('dragover', handleDragOver);
+                target.addEventListener('dragleave', handleDragLeave);
+                target.addEventListener('drop', handleDrop);
+                target.addEventListener('dragenter', handleDragEnter);
+            });
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.target.classList.add('ring-2', 'ring-blue-500');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('ring-2', 'ring-blue-500');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('ring-2', 'ring-blue-500');
+            
+            const draggedIndex = e.dataTransfer.getData('text/plain');
+            const draggedItem = currentContainerItems[draggedIndex];
+            const targetType = parseInt(e.target.dataset.type);
+            
+            // Check if the drop is correct
+            if (draggedItem.type === targetType) {
+                // Correct sorting
+                score += 10;
+                correctlySorted++;
+                
+                // Remove the item from the container
+                currentContainerItems.splice(draggedIndex, 1);
+                
+                // Update the container display
+                displayContainerContents();
+                
+                // Update progress
+                const progress = (correctlySorted / totalItems) * 100;
+                unloadProgress.style.width = `${progress}%`;
+                
+                // Check if container is fully unloaded
+                if (currentContainerItems.length === 0) {
+                    // Bonus points for speed
+                    const timeBonus = Math.floor(timeLeft / 5);
+                    score += timeBonus;
+                    containersUnloaded++;
+                    
+                    // Enable next container button
+                    nextContainerBtn.disabled = false;
+                    
+                    // Check if game should continue
+                    if (containersLeft > 0) {
+                        // Show success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'text-center py-4';
+                        successMsg.innerHTML = `
+                            <div class="inline-block p-3 bg-green-100 text-green-800 rounded-lg mb-2">
+                                <i class="fas fa-check-circle text-3xl"></i>
+                            </div>
+                            <p class="font-semibold">Container Unloaded!</p>
+                            <p class="text-sm">+${timeBonus} time bonus</p>
+                        `;
+                        currentContainerElement.innerHTML = '';
+                        currentContainerElement.appendChild(successMsg);
+                    } else {
+                        // No more containers
+                        endGame();
+                    }
+                }
+            } else {
+                // Incorrect sorting
+                score = Math.max(0, score - 5);
+                
+                // Shake animation for wrong answer
+                e.target.classList.add('shake');
+                setTimeout(() => {
+                    e.target.classList.remove('shake');
+                }, 500);
+            }
+            
+            updateUI();
+        }
+
+        // Render fabric type targets
+        function renderFabricTargets() {
+            fabricTargets.innerHTML = '';
+            
+            fabricTypes.forEach(type => {
+                const target = document.createElement('div');
+                target.className = `fabric-target ${type.color} ${type.text} p-3 rounded-lg text-center cursor-pointer`;
+                target.dataset.type = type.id;
+                
+                target.innerHTML = `
+                    <i class="fas ${type.icon} text-2xl mb-1"></i>
+                    <div class="font-medium">${type.name}</div>
+                    <div class="text-xs opacity-70">Drop here</div>
+                `;
+                
+                fabricTargets.appendChild(target);
+            });
+        }
+
+        // Update UI elements
+        function updateUI() {
+            scoreElement.textContent = score;
+            timeElement.textContent = timeLeft;
+            containersElement.textContent = containersUnloaded;
+            containersLeftElement.textContent = containersLeft;
+        }
+
+        // Initialize the game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

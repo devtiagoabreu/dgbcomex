@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador 3D de Sofá</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #667eea;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .fabric-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fabric-btn {
+            background: #f8f9fa;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fabric-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .fabric-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .fabric-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .fabric-info {
+            flex: 1;
+        }
+
+        .fabric-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .fabric-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .viewer-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Sofá 3D Studio</div>
+                <ul class="nav-menu">
+                    <li><a href="#configurador">Configurador</a></li>
+                    <li><a href="#catalogo">Catálogo</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Configure seu Sofá em 3D</h1>
+        <p>Escolha o tecido perfeito e visualize em tempo real com tecnologia WebGL</p>
+    </section>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <h2>Escolha o Tecido</h2>
+            <div class="fabric-options">
+                <button class="fabric-btn active" data-fabric="bege">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #e8dcc4 0%, #d4c5a9 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Bege</div>
+                        <div class="fabric-desc">Clássico e elegante</div>
+                    </div>
+                </button>
+                <button class="fabric-btn" data-fabric="grafite">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Grafite</div>
+                        <div class="fabric-desc">Moderno e sofisticado</div>
+                    </div>
+                </button>
+                <button class="fabric-btn" data-fabric="cinza">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #b8b8b8 0%, #9a9a9a 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Cinza Claro</div>
+                        <div class="fabric-desc">Neutro e versátil</div>
+                    </div>
+                </button>
+                <button class="fabric-btn" data-fabric="terra">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #a67c52 0%, #8b6342 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Terra</div>
+                        <div class="fabric-desc">Aconchegante e natural</div>
+                    </div>
+                </button>
+                <button class="fabric-btn" data-fabric="azul">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #5b8db8 0%, #4a7394 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Azul Petróleo</div>
+                        <div class="fabric-desc">Elegante e contemporâneo</div>
+                    </div>
+                </button>
+                <button class="fabric-btn" data-fabric="verde">
+                    <div class="fabric-color" style="background: linear-gradient(135deg, #7a9b76 0%, #5f7d5c 100%);"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">Tecido Verde Musgo</div>
+                        <div class="fabric-desc">Calmo e orgânico</div>
+                    </div>
+                </button>
+            </div>
+        </aside>
+
+        <div class="viewer-container">
+            <div class="info-badge">
+                🎨 Arraste para rotacionar • Scroll para zoom
+            </div>
+            <canvas id="canvas3d"></canvas>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Carregando modelo 3D...</p>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="resetCamera">↺ Resetar Câmera</button>
+                <button class="control-btn" id="toggleRotation">⟳ Rotação Auto</button>
+                <button class="control-btn" id="fullscreen">⛶ Tela Cheia</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Configuração Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf5f7fa);
+
+        const canvas = document.getElementById('canvas3d');
+        const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.shadowMap.enabled = true;
+
+        // Posição inicial da câmera
+        camera.position.set(5, 3, 5);
+        camera.lookAt(0, 0.5, 0);
+
+        // Iluminação
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(5, 10, 7);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(-5, 5, -5);
+        scene.add(fillLight);
+
+        // Sofá simulado (geometria básica até carregar o modelo real)
+        let sofaMesh;
+        
+        // Carregar texturas JPG
+        const textureLoader = new THREE.TextureLoader();
+        const fabricTextures = {
+            bege: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0xe8dcc4,
+                roughness: 0.7
+            },
+            grafite: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0x4a4a4a,
+                roughness: 0.6
+            },
+            cinza: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0xb8b8b8,
+                roughness: 0.65
+            },
+            terra: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0xa67c52,
+                roughness: 0.75
+            },
+            azul: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0x5b8db8,
+                roughness: 0.65
+            },
+            verde: {
+                map: null,
+                normalMap: null,
+                roughnessMap: null,
+                color: 0x7a9b76,
+                roughness: 0.7
+            }
+        };
+
+        // Carregar texturas para cada tecido
+        Object.keys(fabricTextures).forEach(fabricName => {
+            const fabric = fabricTextures[fabricName];
+            
+            // Carregar Albedo/Diffuse map
+            textureLoader.load(
+                `textures/tecido_${fabricName}/albedo.jpg`,
+                (texture) => {
+                    texture.wrapS = THREE.RepeatWrapping;
+                    texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1, 1); // Tamanho uniforme - sem distorção
+                    fabric.map = texture;
+                },
+                undefined,
+                (error) => {
+                    console.log(`Textura albedo não encontrada para ${fabricName}, usando cor sólida`);
+                }
+            );
+            
+            // Carregar Normal map
+            textureLoader.load(
+                `textures/tecido_${fabricName}/normal.jpg`,
+                (texture) => {
+                    texture.wrapS = THREE.RepeatWrapping;
+                    texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1, 1); // Tamanho uniforme - sem distorção
+                    fabric.normalMap = texture;
+                },
+                undefined,
+                (error) => {
+                    console.log(`Normal map não encontrado para ${fabricName}`);
+                }
+            );
+            
+            // Carregar Roughness map
+            textureLoader.load(
+                `textures/tecido_${fabricName}/roughness.jpg`,
+                (texture) => {
+                    texture.wrapS = THREE.RepeatWrapping;
+                    texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1, 1); // Tamanho uniforme - sem distorção
+                    fabric.roughnessMap = texture;
+                },
+                undefined,
+                (error) => {
+                    console.log(`Roughness map não encontrado para ${fabricName}`);
+                }
+            );
+        });
+
+        // Criar sofá simples e maior
+        function createDemoSofa() {
+            const sofaGroup = new THREE.Group();
+            const fabricMeshes = [];
+            
+            const seatMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                map: fabricTextures.bege.map,
+                normalMap: fabricTextures.bege.normalMap,
+                roughnessMap: fabricTextures.bege.roughnessMap,
+                roughness: fabricTextures.bege.roughness,
+                metalness: 0.05
+            });
+
+            // Assento principal (maior e quadrado)
+            const seatGeometry = new THREE.BoxGeometry(4, 0.5, 2);
+            const seat = new THREE.Mesh(seatGeometry, seatMaterial);
+            seat.position.y = 0.5;
+            seat.castShadow = true;
+            sofaGroup.add(seat);
+            fabricMeshes.push(seat);
+
+            // Encosto (maior e quadrado)
+            const backGeometry = new THREE.BoxGeometry(4, 1.4, 0.35);
+            const back = new THREE.Mesh(backGeometry, seatMaterial);
+            back.position.set(0, 1.2, -0.85);
+            back.castShadow = true;
+            sofaGroup.add(back);
+            fabricMeshes.push(back);
+
+            // Braço esquerdo (maior)
+            const armGeometry = new THREE.BoxGeometry(0.35, 1, 2);
+            const armLeft = new THREE.Mesh(armGeometry, seatMaterial);
+            armLeft.position.set(-2, 0.75, 0);
+            armLeft.castShadow = true;
+            sofaGroup.add(armLeft);
+            fabricMeshes.push(armLeft);
+
+            // Braço direito (maior)
+            const armRight = new THREE.Mesh(armGeometry, seatMaterial);
+            armRight.position.set(2, 0.75, 0);
+            armRight.castShadow = true;
+            sofaGroup.add(armRight);
+            fabricMeshes.push(armRight);
+
+            // Pés (cilíndricos baixos)
+            const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.35, 16);
+            const legMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2a2a2a, 
+                metalness: 0.4,
+                roughness: 0.6 
+            });
+            
+            const legPositions = [
+                [-1.6, 0.175, 0.8],
+                [1.6, 0.175, 0.8],
+                [-1.6, 0.175, -0.8],
+                [1.6, 0.175, -0.8]
+            ];
+            
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(...pos);
+                leg.castShadow = true;
+                sofaGroup.add(leg);
+            });
+
+            sofaGroup.userData.fabricMeshes = fabricMeshes;
+            return sofaGroup;
+        }
+
+        sofaMesh = createDemoSofa();
+        scene.add(sofaMesh);
+
+        // Chão
+        const floorGeometry = new THREE.PlaneGeometry(20, 20);
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Controles de mouse
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: 0, y: 0 };
+        let autoRotate = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                rotation.y += deltaX * 0.005;
+                rotation.x += deltaY * 0.005;
+                rotation.x = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, rotation.x));
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+
+        // Zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const distance = camera.position.length();
+            const newDistance = distance + (e.deltaY > 0 ? zoomSpeed : -zoomSpeed);
+            const clampedDistance = Math.max(3, Math.min(10, newDistance));
+            camera.position.multiplyScalar(clampedDistance / distance);
+        });
+
+        // Trocar tecido
+        function changeFabric(fabricName) {
+            const fabric = fabricTextures[fabricName];
+            if (fabric && sofaMesh.userData.fabricMeshes) {
+                sofaMesh.userData.fabricMeshes.forEach(mesh => {
+                    // Aplicar texturas se existirem, senão usar cor sólida
+                    if (fabric.map) {
+                        mesh.material.map = fabric.map;
+                        mesh.material.color.setHex(0xffffff); // Branco para não alterar a textura
+                    } else {
+                        mesh.material.map = null;
+                        mesh.material.color.setHex(fabric.color);
+                    }
+                    
+                    mesh.material.normalMap = fabric.normalMap || null;
+                    mesh.material.roughnessMap = fabric.roughnessMap || null;
+                    mesh.material.roughness = fabric.roughness;
+                    mesh.material.needsUpdate = true;
+                });
+            }
+        }
+
+        // Event listeners dos botões de tecido
+        document.querySelectorAll('.fabric-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.fabric-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                changeFabric(btn.dataset.fabric);
+            });
+        });
+
+        // Controles
+        document.getElementById('resetCamera').addEventListener('click', () => {
+            rotation = { x: 0, y: 0 };
+            camera.position.set(4, 2, 4);
+            camera.lookAt(0, 0.5, 0);
+        });
+
+        document.getElementById('toggleRotation').addEventListener('click', () => {
+            autoRotate = !autoRotate;
+        });
+
+        document.getElementById('fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                canvas.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Animação
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (autoRotate) {
+                rotation.y += 0.005;
+            }
+            
+            if (sofaMesh) {
+                sofaMesh.rotation.y = rotation.y;
+                sofaMesh.rotation.x = rotation.x;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Responsividade
+        window.addEventListener('resize', () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        // Fix para tela cheia
+        document.addEventListener('fullscreenchange', () => {
+            setTimeout(() => {
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            }, 100);
+        });
+
+        // Iniciar
+        document.getElementById('loading').style.display = 'none';
+        animate();
+    </script>
+</body>
+</html>

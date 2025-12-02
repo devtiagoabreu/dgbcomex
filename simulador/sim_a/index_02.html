@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Estofados - Seleção Manual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .simulator-area {
+            padding: 40px 20px;
+        }
+
+        .upload-section {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 15px;
+            border: 2px dashed #667eea;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin: 5px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .upload-info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .sofa-viewer {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            background: #2c2c2c;
+            position: relative;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 500px;
+            background: #2c2c2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #sofa-canvas {
+            max-width: 100%;
+            max-height: 700px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .tool-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .tool-panel h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .tool-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .tool-option:hover {
+            background: #f0f0f0;
+        }
+
+        .tool-option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .brush-size {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .brush-size label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .brush-size input[type="range"] {
+            width: 100%;
+        }
+
+        .size-value {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .tool-buttons {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tool-btn-clear {
+            background: #ef4444;
+            color: white;
+        }
+
+        .tool-btn-clear:hover {
+            background: #dc2626;
+        }
+
+        .tool-btn-auto {
+            background: #10b981;
+            color: white;
+        }
+
+        .tool-btn-auto:hover {
+            background: #059669;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 44, 44, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #444;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .fabric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .fabric-card {
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 3px solid transparent;
+            background: white;
+        }
+        
+        .fabric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .fabric-card.active {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .fabric-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .fabric-info {
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .fabric-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .fabric-type {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        
+        .selected-info {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+        }
+        
+        .selected-fabric-name {
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .controls-bottom {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
+        }
+        
+        .instructions {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .instructions strong {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tool-panel {
+                position: relative;
+                margin-bottom: 20px;
+            }
+            
+            .fabric-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 15px;
+            }
+            
+            .fabric-image {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛋️ Simulador de Estofados Pro</h1>
+            <p class="subtitle">Selecione as áreas do sofá e aplique diferentes tecidos</p>
+        </header>
+        
+        <section class="simulator-area">
+            <div class="upload-section">
+                <h3>📸 Faça upload da foto do seu sofá</h3>
+                <p style="margin: 10px 0; color: #666;">Ou use a imagem de exemplo</p>
+                <input type="file" id="file-input" accept="image/*">
+                <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+                    Escolher Imagem
+                </button>
+                <button class="upload-btn" onclick="loadExampleImage()">
+                    Usar Imagem de Exemplo
+                </button>
+                <p class="upload-info">Formatos aceitos: JPG, PNG | Tamanho recomendado: até 5MB</p>
+            </div>
+
+            <div class="sofa-viewer">
+                <div class="canvas-wrapper" id="canvas-wrapper">
+                    <div class="placeholder" id="placeholder">
+                        <div class="placeholder-icon">🖼️</div>
+                        <p>Faça upload de uma imagem do sofá para começar</p>
+                    </div>
+                    
+                    <div class="tool-panel" id="tool-panel" style="display: none;">
+                        <h3>🎨 Ferramentas</h3>
+                        
+                        <div class="tool-option">
+                            <input type="radio" name="tool" id="tool-paint" value="paint" checked>
+                            <label for="tool-paint">✏️ Pincel (selecionar áreas)</label>
+                        </div>
+                        
+                        <div class="tool-option">
+                            <input type="radio" name="tool" id="tool-erase" value="erase">
+                            <label for="tool-erase">🧹 Borracha (remover seleção)</label>
+                        </div>
+                        
+                        <div class="brush-size">
+                            <label>Tamanho do pincel:</label>
+                            <input type="range" id="brush-size" min="5" max="100" value="30">
+                            <div class="size-value"><span id="size-display">30</span>px</div>
+                        </div>
+
+                        <div class="tool-buttons">
+                            <button class="tool-btn tool-btn-auto" id="auto-select">✨ Seleção Automática</button>
+                            <button class="tool-btn tool-btn-clear" id="clear-selection">🗑️ Limpar Seleção</button>
+                        </div>
+                    </div>
+
+                    <canvas id="sofa-canvas" style="display: none;"></canvas>
+                    <div class="loading-overlay" id="loading">
+                        <div class="spinner"></div>
+                        <p>Aplicando tecido...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls" id="controls" style="display: none;">
+                <h2 class="section-title">Escolha o Tecido</h2>
+                
+                <div class="fabric-grid" id="fabric-grid"></div>
+                
+                <div class="selected-info">
+                    <div class="selected-fabric-name" id="selected-name">Selecione um tecido</div>
+                    <div class="fabric-type" id="selected-type">Primeiro selecione as áreas do sofá, depois escolha o tecido</div>
+                </div>
+                
+                <div class="controls-bottom">
+                    <button class="btn btn-secondary" id="reset-btn">Resetar para Original</button>
+                    <button class="btn" id="download-btn">💾 Baixar Imagem</button>
+                </div>
+                
+                <div class="instructions">
+                    <strong>💡 Como usar:</strong><br>
+                    <b>1.</b> Use o pincel para selecionar as áreas do sofá que deseja trocar o tecido<br>
+                    <b>2.</b> Clique em qualquer tecido abaixo para aplicá-lo nas áreas selecionadas<br>
+                    <b>3.</b> Use a borracha para ajustar a seleção ou o botão de seleção automática
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const fabrics = [
+            { id: 1, name: "Veludo Azul Royal", type: "Veludo", color: "#1e40af" },
+            { id: 2, name: "Linho Bege", type: "Linho", color: "#d4c5b0" },
+            { id: 3, name: "Suede Cinza", type: "Suede", color: "#6b7280" },
+            { id: 4, name: "Couro Caramelo", type: "Couro", color: "#92400e" },
+            { id: 5, name: "Veludo Verde", type: "Veludo", color: "#047857" },
+            { id: 6, name: "Cetim Vinho", type: "Cetim", color: "#881337" },
+            { id: 7, name: "Linho Grafite", type: "Linho", color: "#374151" },
+            { id: 8, name: "Veludo Mostarda", type: "Veludo", color: "#d97706" }
+        ];
+
+        const canvas = document.getElementById('sofa-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const fabricGrid = document.getElementById('fabric-grid');
+        const selectedName = document.getElementById('selected-name');
+        const selectedType = document.getElementById('selected-type');
+        const loading = document.getElementById('loading');
+        const resetBtn = document.getElementById('reset-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const fileInput = document.getElementById('file-input');
+        const placeholder = document.getElementById('placeholder');
+        const controls = document.getElementById('controls');
+        const toolPanel = document.getElementById('tool-panel');
+        const brushSizeInput = document.getElementById('brush-size');
+        const sizeDisplay = document.getElementById('size-display');
+        const autoSelectBtn = document.getElementById('auto-select');
+        const clearSelectionBtn = document.getElementById('clear-selection');
+
+        let sofaImg = new Image();
+        let originalImageData = null;
+        let maskCanvas = document.createElement('canvas');
+        let maskCtx = maskCanvas.getContext('2d');
+        let isDrawing = false;
+        let currentTool = 'paint';
+        let brushSize = 30;
+        let currentFabric = null;
+
+        // Atualizar tamanho do pincel
+        brushSizeInput.addEventListener('input', (e) => {
+            brushSize = parseInt(e.target.value);
+            sizeDisplay.textContent = brushSize;
+        });
+
+        // Trocar ferramenta
+        document.querySelectorAll('input[name="tool"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentTool = e.target.value;
+            });
+        });
+
+        // Carregar imagem de exemplo
+        function loadExampleImage() {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = function() {
+                processImage(img);
+            };
+            img.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop';
+        }
+
+        // Upload de arquivo
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        processImage(img);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Processar imagem carregada
+        function processImage(img) {
+            sofaImg = img;
+            placeholder.style.display = 'none';
+            canvas.style.display = 'block';
+            controls.style.display = 'block';
+            toolPanel.style.display = 'block';
+
+            const maxWidth = 1200;
+            const maxHeight = 700;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+                height = (maxWidth / width) * height;
+                width = maxWidth;
+            }
+            if (height > maxHeight) {
+                width = (maxHeight / height) * width;
+                height = maxHeight;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            maskCanvas.width = width;
+            maskCanvas.height = height;
+
+            ctx.drawImage(img, 0, 0, width, height);
+            originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Limpar máscara
+            maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+            controls.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Desenho na máscara
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            maskCtx.beginPath();
+            maskCtx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+            
+            if (currentTool === 'paint') {
+                maskCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            } else {
+                maskCtx.globalCompositeOperation = 'destination-out';
+                maskCtx.fillStyle = 'rgba(255, 255, 255, 1)';
+            }
+            
+            maskCtx.fill();
+            maskCtx.globalCompositeOperation = 'source-over';
+
+            // Mostrar preview da máscara
+            showMaskPreview();
+        }
+
+        // Mostrar preview da máscara
+        function showMaskPreview() {
+            ctx.putImageData(originalImageData, 0, 0);
+            ctx.drawImage(maskCanvas, 0, 0);
+        }
+
+        // Seleção automática (detecta áreas claras/bege do sofá)
+        autoSelectBtn.addEventListener('click', () => {
+            if (!originalImageData) return;
+            
+            loading.classList.add('active');
+            
+            setTimeout(() => {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+                
+                // Detectar pixels do sofá (tons claros, bege/cinza)
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Detectar tons claros típicos de sofá
+                    const brightness = (r + g + b) / 3;
+                    const isGrayish = Math.abs(r - g) < 40 && Math.abs(g - b) < 40 && Math.abs(r - b) < 40;
+                    
+                    if (brightness > 100 && brightness < 240 && isGrayish) {
+                        const x = (i / 4) % canvas.width;
+                        const y = Math.floor((i / 4) / canvas.width);
+                        maskCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                        maskCtx.fillRect(x, y, 1, 1);
+                    }
+                }
+                
+                showMaskPreview();
+                loading.classList.remove('active');
+            }, 100);
+        });
+
+        // Limpar seleção
+        clearSelectionBtn.addEventListener('click', () => {
+            maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+            ctx.putImageData(originalImageData, 0, 0);
+        });
+
+        // Aplicar tecido nas áreas selecionadas
+        function applyFabric(fabric) {
+            if (!originalImageData) return;
+            
+            loading.classList.add('active');
+            currentFabric = fabric;
+            
+            setTimeout(() => {
+                const original = originalImageData.data;
+                const mask = maskCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+                const result = ctx.createImageData(canvas.width, canvas.height);
+                
+                const r = parseInt(fabric.color.substr(1, 2), 16);
+                const g = parseInt(fabric.color.substr(3, 2), 16);
+                const b = parseInt(fabric.color.substr(5, 2), 16);
+                
+                for (let i = 0; i < original.length; i += 4) {
+                    // Se a máscara está ativa neste pixel
+                    if (mask[i] > 0) {
+                        // Calcular luminosidade original
+                        const brightness = (original[i] * 0.299 + original[i+1] * 0.587 + original[i+2] * 0.114) / 255;
+                        const factor = brightness * 0.85 + 0.15;
+                        
+                        // Aplicar nova cor mantendo luminosidade
+                        result.data[i] = r * factor;
+                        result.data[i+1] = g * factor;
+                        result.data[i+2] = b * factor;
+                        result.data[i+3] = 255;
+                    } else {
+                        // Manter pixel original
+                        result.data[i] = original[i];
+                        result.data[i+1] = original[i+1];
+                        result.data[i+2] = original[i+2];
+                        result.data[i+3] = original[i+3];
+                    }
+                }
+                
+                ctx.putImageData(result, 0, 0);
+                loading.classList.remove('active');
+            }, 100);
+        }
+
+        // Criar grid de tecidos
+        function createFabricGrid() {
+            fabrics.forEach(fabric => {
+                const card = document.createElement('div');
+                card.className = 'fabric-card';
+                card.style.background = fabric.color;
+                card.innerHTML = `
+                    <div style="width: 100%; height: 120px; background: ${fabric.color};"></div>
+                    <div class="fabric-info">
+                        <div class="fabric-name">${fabric.name}</div>
+                        <div class="fabric-type">${fabric.type}</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.fabric-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    selectedName.textContent = fabric.name;
+                    selectedType.textContent = `Tecido tipo ${fabric.type}`;
+                    applyFabric(fabric);
+                });
+                
+                fabricGrid.appendChild(card);
+            });
+        }
+
+        // Reset
+        resetBtn.addEventListener('click', () => {
+            if (originalImageData) {
+                ctx.putImageData(originalImageData, 0, 0);
+                maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+                document.querySelectorAll('.fabric-card').forEach(c => c.classList.remove('active'));
+                selectedName.textContent = 'Selecione um tecido';
+                selectedType.textContent = 'Primeiro selecione as áreas do sofá, depois escolha o tecido';
+                currentFabric = null;
+            }
+        });
+
+        // Download
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'sofa-estofado.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            createFabricGrid();
+        });
+    </script>
+</body>
+</html>

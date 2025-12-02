@@ -1,0 +1,74 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eee;
+}
+
+header {
+    background: #222;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+#layout {
+    display: flex;
+    height: calc(100vh - 120px);
+}
+
+#menu {
+    width: 260px;
+    background: #fff;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+#menu h2 {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.swatches {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.swatch {
+    width: 100%;
+    height: 80px;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    border: 2px solid #ddd;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button:hover {
+    background: #000;
+}
+
+#viewer {
+    flex: 1;
+    background: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#canvas3d {
+    width: 100%;
+    height: 100%;
+}

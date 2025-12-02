@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Configurador 3D de Sofá</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- THREE.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- BABYLON (opcional) -->
+    <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script> -->
+</head>
+
+<body>
+
+<header>
+    <h1>CONFIGURADOR DE SOFÁ 3D</h1>
+    <p>Escolha o tecido, rotacione, dê zoom e visualize em 3D</p>
+</header>
+
+<div id="layout">
+
+    <!-- MENU LATERAL -->
+    <aside id="menu">
+        <h2>Escolha o tecido</h2>
+
+        <div class="swatches">
+            <div class="swatch" onclick="trocarTecido('tecido_bege')" style="background-image: url('./textures/tecido_bege/albedo.jpg')"></div>
+            <div class="swatch" onclick="trocarTecido('tecido_grafite')" style="background-image: url('./textures/tecido_grafite/albedo.jpg')"></div>
+            <div class="swatch" onclick="trocarTecido('tecido_cinza_claro')" style="background-image: url('./textures/tecido_cinza_claro/albedo.jpg')"></div>
+            <div class="swatch" onclick="trocarTecido('tecido_terra')" style="background-image: url('./textures/tecido_terra/albedo.jpg')"></div>
+        </div>
+
+        <h2>Comandos</h2>
+        <button onclick="toggleAutoRotate()">Ativar/Desativar Rotação</button>
+        <button onclick="zoomIn()">Zoom +</button>
+        <button onclick="zoomOut()">Zoom -</button>
+    </aside>
+
+    <!-- VIEWPORT 3D -->
+    <main id="viewer">
+        <div id="canvas3d"></div>
+    </main>
+
+</div>
+
+<!-- APP Three.js -->
+<script src="three_app.js"></script>
+
+<!-- Se quiser usar Babylon, habilite esta linha -->
+<!-- <script src="babylon_app.js"></script> -->
+
+</body>
+</html>

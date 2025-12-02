@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador 3D de Sofá</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #667eea;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .fabric-line-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .fabric-line-btn {
+            background: #f8f9fa;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .fabric-line-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .fabric-line-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .texture-options {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .texture-options.active {
+            display: flex;
+        }
+
+        .texture-btn {
+            background: #f8f9fa;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .texture-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .texture-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .texture-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .texture-info {
+            flex: 1;
+        }
+
+        .texture-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .texture-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .viewer-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Sofá 3D Studio</div>
+                <ul class="nav-menu">
+                    <li><a href="#configurador">Configurador</a></li>
+                    <li><a href="#catalogo">Catálogo</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Configure seu Sofá em 3D</h1>
+        <p>Escolha a linha de tecido e depois a textura específica</p>
+    </section>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <h2>Linhas de Tecido</h2>
+            
+            <!-- Seleção de Linha de Tecido -->
+            <div class="fabric-line-options">
+                <button class="fabric-line-btn active" data-line="premium">
+                    🏆 Linha Premium
+                </button>
+                <button class="fabric-line-btn" data-line="classic">
+                    👑 Linha Classic
+                </button>
+                <button class="fabric-line-btn" data-line="modern">
+                    💫 Linha Modern
+                </button>
+                <button class="fabric-line-btn" data-line="nature">
+                    🌿 Linha Nature
+                </button>
+            </div>
+
+            <!-- Texturas da Linha Premium -->
+            <div class="texture-options active" id="textures-premium">
+                <h3 style="color: #666; margin-bottom: 15px; font-size: 16px;">Texturas Premium</h3>
+                <button class="texture-btn active" data-line="premium" data-texture="bege">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #e8dcc4 0%, #d4c5a9 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Bege Nobre</div>
+                        <div class="texture-desc">Textura suave e elegante</div>
+                    </div>
+                </button>
+                <button class="texture-btn" data-line="premium" data-texture="grafite">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Grafite Premium</div>
+                        <div class="texture-desc">Acabamento sofisticado</div>
+                    </div>
+                </button>
+                <button class="texture-btn" data-line="premium" data-texture="cinza">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #b8b8b8 0%, #9a9a9a 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Cinza Perolado</div>
+                        <div class="texture-desc">Brilho suave e refinado</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Texturas da Linha Classic -->
+            <div class="texture-options" id="textures-classic">
+                <h3 style="color: #666; margin-bottom: 15px; font-size: 16px;">Texturas Classic</h3>
+                <button class="texture-btn" data-line="classic" data-texture="terra">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #a67c52 0%, #8b6342 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Terra Clássica</div>
+                        <div class="texture-desc">Acabamento tradicional</div>
+                    </div>
+                </button>
+                <button class="texture-btn" data-line="classic" data-texture="vinho">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #722f37 0%, #5a252b 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Vinho Burgundy</div>
+                        <div class="texture-desc">Textura aveludada</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Texturas da Linha Modern -->
+            <div class="texture-options" id="textures-modern">
+                <h3 style="color: #666; margin-bottom: 15px; font-size: 16px;">Texturas Modern</h3>
+                <button class="texture-btn" data-line="modern" data-texture="azul">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #5b8db8 0%, #4a7394 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Azul Tech</div>
+                        <div class="texture-desc">Acabamento tecnológico</div>
+                    </div>
+                </button>
+                <button class="texture-btn" data-line="modern" data-texture="grafite">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Grafite Metal</div>
+                        <div class="texture-desc">Textura industrial</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Texturas da Linha Nature -->
+            <div class="texture-options" id="textures-nature">
+                <h3 style="color: #666; margin-bottom: 15px; font-size: 16px;">Texturas Nature</h3>
+                <button class="texture-btn" data-line="nature" data-texture="verde">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #7a9b76 0%, #5f7d5c 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Verde Musgo</div>
+                        <div class="texture-desc">Textura natural</div>
+                    </div>
+                </button>
+                <button class="texture-btn" data-line="nature" data-texture="areia">
+                    <div class="texture-preview" style="background: linear-gradient(135deg, #d7ccc8 0%, #bcaaa4 100%);"></div>
+                    <div class="texture-info">
+                        <div class="texture-name">Areia Desert</div>
+                        <div class="texture-desc">Acabamento rústico</div>
+                    </div>
+                </button>
+            </div>
+        </aside>
+
+        <div class="viewer-container">
+            <div class="info-badge">
+                🎨 Arraste para rotacionar • Scroll para zoom
+            </div>
+            <canvas id="canvas3d"></canvas>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Carregando modelo 3D...</p>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="resetCamera">↺ Resetar Câmera</button>
+                <button class="control-btn" id="toggleRotation">⟳ Rotação Auto</button>
+                <button class="control-btn" id="fullscreen">⛶ Tela Cheia</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Configuração Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf5f7fa);
+
+        const canvas = document.getElementById('canvas3d');
+        const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.shadowMap.enabled = true;
+
+        // Posição inicial da câmera
+        camera.position.set(5, 3, 5);
+        camera.lookAt(0, 0.5, 0);
+
+        // Iluminação
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(5, 10, 7);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(-5, 5, -5);
+        scene.add(fillLight);
+
+        // Sofá simulado
+        let sofaMesh;
+        
+        // Carregar texturas JPG - ESTRUTURA MODIFICADA PARA LINHAS
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Mapeamento de texturas por linha e textura
+        const fabricTextures = {
+            // Linha Premium
+            'premium-bege': { 
+                path: 'textures/premium/bege/albedo.jpg',
+                color: 0xe8dcc4,
+                roughness: 0.7
+            },
+            'premium-grafite': { 
+                path: 'textures/premium/grafite/albedo.jpg',
+                color: 0x4a4a4a,
+                roughness: 0.6
+            },
+            'premium-cinza': { 
+                path: 'textures/premium/cinza/albedo.jpg',
+                color: 0xb8b8b8,
+                roughness: 0.65
+            },
+            
+            // Linha Classic
+            'classic-terra': { 
+                path: 'textures/classic/terra/albedo.jpg',
+                color: 0xa67c52,
+                roughness: 0.75
+            },
+            'classic-vinho': { 
+                path: 'textures/classic/vinho/albedo.jpg',
+                color: 0x722f37,
+                roughness: 0.7
+            },
+            
+            // Linha Modern
+            'modern-azul': { 
+                path: 'textures/modern/azul/albedo.jpg',
+                color: 0x5b8db8,
+                roughness: 0.65
+            },
+            'modern-grafite': { 
+                path: 'textures/modern/grafite/albedo.jpg',
+                color: 0x4a4a4a,
+                roughness: 0.6
+            },
+            
+            // Linha Nature
+            'nature-verde': { 
+                path: 'textures/nature/verde/albedo.jpg',
+                color: 0x7a9b76,
+                roughness: 0.7
+            },
+            'nature-areia': { 
+                path: 'textures/nature/areia/albedo.jpg',
+                color: 0xd7ccc8,
+                roughness: 0.75
+            }
+        };
+
+        // Cache de texturas carregadas
+        const loadedTextures = {};
+
+        // Criar sofá simples
+        function createDemoSofa() {
+            const sofaGroup = new THREE.Group();
+            const fabricMeshes = [];
+            
+            const seatMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                roughness: 0.7,
+                metalness: 0.05
+            });
+
+            // Assento principal
+            const seatGeometry = new THREE.BoxGeometry(4, 0.5, 2);
+            const seat = new THREE.Mesh(seatGeometry, seatMaterial);
+            seat.position.y = 0.5;
+            seat.castShadow = true;
+            sofaGroup.add(seat);
+            fabricMeshes.push(seat);
+
+            // Encosto
+            const backGeometry = new THREE.BoxGeometry(4, 1.4, 0.35);
+            const back = new THREE.Mesh(backGeometry, seatMaterial);
+            back.position.set(0, 1.2, -0.85);
+            back.castShadow = true;
+            sofaGroup.add(back);
+            fabricMeshes.push(back);
+
+            // Braço esquerdo
+            const armGeometry = new THREE.BoxGeometry(0.35, 1, 2);
+            const armLeft = new THREE.Mesh(armGeometry, seatMaterial);
+            armLeft.position.set(-2, 0.75, 0);
+            armLeft.castShadow = true;
+            sofaGroup.add(armLeft);
+            fabricMeshes.push(armLeft);
+
+            // Braço direito
+            const armRight = new THREE.Mesh(armGeometry, seatMaterial);
+            armRight.position.set(2, 0.75, 0);
+            armRight.castShadow = true;
+            sofaGroup.add(armRight);
+            fabricMeshes.push(armRight);
+
+            // Pés
+            const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.35, 16);
+            const legMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2a2a2a, 
+                metalness: 0.4,
+                roughness: 0.6 
+            });
+            
+            const legPositions = [
+                [-1.6, 0.175, 0.8],
+                [1.6, 0.175, 0.8],
+                [-1.6, 0.175, -0.8],
+                [1.6, 0.175, -0.8]
+            ];
+            
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(...pos);
+                leg.castShadow = true;
+                sofaGroup.add(leg);
+            });
+
+            sofaGroup.userData.fabricMeshes = fabricMeshes;
+            return sofaGroup;
+        }
+
+        sofaMesh = createDemoSofa();
+        scene.add(sofaMesh);
+
+        // Chão
+        const floorGeometry = new THREE.PlaneGeometry(20, 20);
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Controles de mouse
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: 0, y: 0 };
+        let autoRotate = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                rotation.y += deltaX * 0.005;
+                rotation.x += deltaY * 0.005;
+                rotation.x = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, rotation.x));
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+
+        // Zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const distance = camera.position.length();
+            const newDistance = distance + (e.deltaY > 0 ? zoomSpeed : -zoomSpeed);
+            const clampedDistance = Math.max(3, Math.min(10, newDistance));
+            camera.position.multiplyScalar(clampedDistance / distance);
+        });
+
+        // Trocar textura
+        function changeTexture(line, textureName) {
+            const textureKey = `${line}-${textureName}`;
+            const fabricConfig = fabricTextures[textureKey];
+            
+            if (!fabricConfig) {
+                console.warn(`Configuração não encontrada para: ${textureKey}`);
+                return;
+            }
+
+            // Se já temos a textura carregada, aplica diretamente
+            if (loadedTextures[textureKey]) {
+                applyTextureToSofa(loadedTextures[textureKey], fabricConfig);
+            } else {
+                // Carrega a textura
+                textureLoader.load(
+                    fabricConfig.path,
+                    (texture) => {
+                        texture.wrapS = THREE.RepeatWrapping;
+                        texture.wrapT = THREE.RepeatWrapping;
+                        texture.repeat.set(1, 1);
+                        
+                        // Salva no cache
+                        loadedTextures[textureKey] = texture;
+                        
+                        // Aplica a textura
+                        applyTextureToSofa(texture, fabricConfig);
+                    },
+                    undefined,
+                    (error) => {
+                        console.log(`Textura não encontrada: ${fabricConfig.path}`);
+                        // Fallback para cor sólida
+                        applyTextureToSofa(null, fabricConfig);
+                    }
+                );
+            }
+        }
+
+        function applyTextureToSofa(texture, fabricConfig) {
+            if (sofaMesh.userData.fabricMeshes) {
+                sofaMesh.userData.fabricMeshes.forEach(mesh => {
+                    if (texture) {
+                        mesh.material.map = texture;
+                        mesh.material.color.setHex(0xffffff);
+                    } else {
+                        mesh.material.map = null;
+                        mesh.material.color.setHex(fabricConfig.color);
+                    }
+                    mesh.material.roughness = fabricConfig.roughness;
+                    mesh.material.needsUpdate = true;
+                });
+            }
+        }
+
+        // Event listeners para linhas de tecido
+        document.querySelectorAll('.fabric-line-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active de todas as linhas
+                document.querySelectorAll('.fabric-line-btn').forEach(b => b.classList.remove('active'));
+                // Adiciona active na linha clicada
+                btn.classList.add('active');
+                
+                const line = btn.dataset.line;
+                
+                // Esconde todas as opções de textura
+                document.querySelectorAll('.texture-options').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Mostra as texturas da linha selecionada
+                const textureOptions = document.getElementById(`textures-${line}`);
+                if (textureOptions) {
+                    textureOptions.classList.add('active');
+                    
+                    // Ativa a primeira textura da linha
+                    const firstTexture = textureOptions.querySelector('.texture-btn');
+                    if (firstTexture) {
+                        document.querySelectorAll('.texture-btn').forEach(t => t.classList.remove('active'));
+                        firstTexture.classList.add('active');
+                        changeTexture(line, firstTexture.dataset.texture);
+                    }
+                }
+            });
+        });
+
+        // Event listeners para texturas
+        document.querySelectorAll('.texture-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const line = btn.dataset.line;
+                const texture = btn.dataset.texture;
+                
+                // Remove active de todas as texturas da mesma linha
+                document.querySelectorAll(`.texture-btn[data-line="${line}"]`).forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // Adiciona active na textura clicada
+                btn.classList.add('active');
+                
+                // Aplica a textura
+                changeTexture(line, texture);
+            });
+        });
+
+        // Controles
+        document.getElementById('resetCamera').addEventListener('click', () => {
+            rotation = { x: 0, y: 0 };
+            camera.position.set(4, 2, 4);
+            camera.lookAt(0, 0.5, 0);
+        });
+
+        document.getElementById('toggleRotation').addEventListener('click', () => {
+            autoRotate = !autoRotate;
+        });
+
+        document.getElementById('fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                canvas.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Animação
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (autoRotate) {
+                rotation.y += 0.005;
+            }
+            
+            if (sofaMesh) {
+                sofaMesh.rotation.y = rotation.y;
+                sofaMesh.rotation.x = rotation.x;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Responsividade
+        window.addEventListener('resize', () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        // Fix para tela cheia
+        document.addEventListener('fullscreenchange', () => {
+            setTimeout(() => {
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            }, 100);
+        });
+
+        // Iniciar
+        document.getElementById('loading').style.display = 'none';
+        
+        // Aplicar textura inicial
+        changeTexture('premium', 'bege');
+        
+        animate();
+    </script>
+</body>
+</html>

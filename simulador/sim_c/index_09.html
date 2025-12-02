@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador 3D de Sofá</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #667eea;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-container {
+            margin-bottom: 25px;
+        }
+
+        .dropdown-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .fabric-dropdown {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+
+        .fabric-dropdown:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .fabric-dropdown:hover {
+            border-color: #667eea;
+        }
+
+        /* Texture Grid with Scroll */
+        .textures-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .textures-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .textures-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .textures-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .textures-container::-webkit-scrollbar-thumb:hover {
+            background: #5a6fd8;
+        }
+
+        .texture-options {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .texture-options.active {
+            display: flex;
+        }
+
+        .texture-section-title {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f4ff;
+        }
+
+        .texture-btn {
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .texture-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .texture-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .texture-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid #e1e5e9;
+        }
+
+        .texture-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .texture-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+            font-size: 13px;
+        }
+
+        .texture-desc {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .viewer-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .textures-container {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Sofá 3D Studio</div>
+                <ul class="nav-menu">
+                    <li><a href="#configurador">Configurador</a></li>
+                    <li><a href="#catalogo">Catálogo</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Configure seu Sofá em 3D</h1>
+        <p>Selecione a linha de tecido e escolha a textura perfeita</p>
+    </section>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <h2>Personalização</h2>
+            
+            <!-- Dropdown para Linhas de Tecido -->
+            <div class="dropdown-container">
+                <label class="dropdown-label">Linha de Tecido</label>
+                <select class="fabric-dropdown" id="fabricLineDropdown">
+                    <option value="boucle">🧶 Bouclé Nice</option>
+                    <option value="veludinho">🦔 Veludinho</option>
+                    <option value="jaguar">🐆 Jaguar</option>
+                    <option value="silver">🔩 Silver</option>
+                    <option value="confort">🛋️ Confort</option>
+                    <option value="belga">🇧🇪 Belga</option>
+                    <option value="microside">⚡ Micro Side</option>
+                    <option value="diamond">💎 Diamond</option>
+                </select>
+            </div>
+
+            <!-- Container com Scroll para Texturas -->
+            <div class="textures-container">
+                
+                <!-- Bouclé Nice -->
+                <div class="texture-options active" id="textures-boucle">
+                    <div class="texture-section-title">Bouclé Nice - 18 Cores</div>
+                    <button class="texture-btn active" data-line="boucle" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="red">
+                        <div class="texture-preview" style="background: #FF0000"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">07 - Red</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="terracota">
+                        <div class="texture-preview" style="background: #E2725B"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">29 - Terracota</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="marsala">
+                        <div class="texture-preview" style="background: #954535"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">17 - Marsala</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="marinho">
+                        <div class="texture-preview" style="background: #003366"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">34 - Marinho</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="petroleo">
+                        <div class="texture-preview" style="background: #2F4F4F"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">33 - Petróleo</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="steel">
+                        <div class="texture-preview" style="background: #4682B4"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">49 - Steel</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="grafite">
+                        <div class="texture-preview" style="background: #404040"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">32 - Grafite</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="black">
+                        <div class="texture-preview" style="background: #000000"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">05 - Black</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="ivory">
+                        <div class="texture-preview" style="background: #FFFFF0"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">12 - Ivory</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="kaki">
+                        <div class="texture-preview" style="background: #C3B091"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">31 - Kaki</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="champagne">
+                        <div class="texture-preview" style="background: #F7E7CE"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">21 - Champagne</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="timber">
+                        <div class="texture-preview" style="background: #D2691E"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">24 - Timber</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="java">
+                        <div class="texture-preview" style="background: #B5651D"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">48 - Java</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="chocolate">
+                        <div class="texture-preview" style="background: #7B3F00"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">13 - Chocolate</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="amarelo-ouro">
+                        <div class="texture-preview" style="background: #FFD700"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">43 - Amarelo Ouro</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="blue">
+                        <div class="texture-preview" style="background: #1E90FF"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">18 - Blue</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="boucle" data-texture="esmeralda">
+                        <div class="texture-preview" style="background: #50C878"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">35 - Esmeralda</div>
+                            <div class="texture-desc">Bouclé texturizado</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Veludinho -->
+                <div class="texture-options" id="textures-veludinho">
+                    <div class="texture-section-title">Veludinho - 18 Cores</div>
+                    <button class="texture-btn" data-line="veludinho" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Veludo macio</div>
+                        </div>
+                    </button>
+                    <button class="texture-btn" data-line="veludinho" data-texture="red">
+                        <div class="texture-preview" style="background: #FF0000"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">07 - Red</div>
+                            <div class="texture-desc">Veludo macio</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores da mesma forma) -->
+                    <button class="texture-btn" data-line="veludinho" data-texture="esmeralda">
+                        <div class="texture-preview" style="background: #50C878"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">35 - Esmeralda</div>
+                            <div class="texture-desc">Veludo macio</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Jaguar -->
+                <div class="texture-options" id="textures-jaguar">
+                    <div class="texture-section-title">Jaguar - 18 Cores</div>
+                    <button class="texture-btn" data-line="jaguar" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Padrão animal print</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+                <!-- Silver -->
+                <div class="texture-options" id="textures-silver">
+                    <div class="texture-section-title">Silver - 18 Cores</div>
+                    <button class="texture-btn" data-line="silver" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Acabamento metálico</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+                <!-- Confort -->
+                <div class="texture-options" id="textures-confort">
+                    <div class="texture-section-title">Confort - 18 Cores</div>
+                    <button class="texture-btn" data-line="confort" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Conforto máximo</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+                <!-- Belga -->
+                <div class="texture-options" id="textures-belga">
+                    <div class="texture-section-title">Belga - 18 Cores</div>
+                    <button class="texture-btn" data-line="belga" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Qualidade premium</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+                <!-- Micro Side -->
+                <div class="texture-options" id="textures-microside">
+                    <div class="texture-section-title">Micro Side - 18 Cores</div>
+                    <button class="texture-btn" data-line="microside" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Microfibra suave</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+                <!-- Diamond -->
+                <div class="texture-options" id="textures-diamond">
+                    <div class="texture-section-title">Diamond - 18 Cores</div>
+                    <button class="texture-btn" data-line="diamond" data-texture="rosa-velho">
+                        <div class="texture-preview" style="background: #8B4513"></div>
+                        <div class="texture-info">
+                            <div class="texture-name">44 - Rosa Velho</div>
+                            <div class="texture-desc">Brilho diamante</div>
+                        </div>
+                    </button>
+                    <!-- ... (repetir para todas as 18 cores) -->
+                </div>
+
+            </div>
+        </aside>
+
+        <div class="viewer-container">
+            <div class="info-badge">
+                🎨 Arraste para rotacionar • Scroll para zoom
+            </div>
+            <canvas id="canvas3d"></canvas>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Carregando modelo 3D...</p>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="resetCamera">↺ Resetar Câmera</button>
+                <button class="control-btn" id="toggleRotation">⟳ Rotação Auto</button>
+                <button class="control-btn" id="fullscreen">⛶ Tela Cheia</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Configuração Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf5f7fa);
+
+        const canvas = document.getElementById('canvas3d');
+        const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.shadowMap.enabled = true;
+
+        camera.position.set(5, 3, 5);
+        camera.lookAt(0, 0.5, 0);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(5, 10, 7);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(-5, 5, -5);
+        scene.add(fillLight);
+
+        let sofaMesh;
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Mapeamento de cores
+        const colorMap = {
+            'rosa-velho': 0x8B4513,
+            'red': 0xFF0000,
+            'terracota': 0xE2725B,
+            'marsala': 0x954535,
+            'marinho': 0x003366,
+            'petroleo': 0x2F4F4F,
+            'steel': 0x4682B4,
+            'grafite': 0x404040,
+            'black': 0x000000,
+            'ivory': 0xFFFFF0,
+            'kaki': 0xC3B091,
+            'champagne': 0xF7E7CE,
+            'timber': 0xD2691E,
+            'java': 0xB5651D,
+            'chocolate': 0x7B3F00,
+            'amarelo-ouro': 0xFFD700,
+            'blue': 0x1E90FF,
+            'esmeralda': 0x50C878
+        };
+
+        // Estrutura de texturas para todas as linhas
+        const fabricTextures = {};
+        const lines = ['boucle', 'veludinho', 'jaguar', 'silver', 'confort', 'belga', 'microside', 'diamond'];
+        const textures = Object.keys(colorMap);
+
+        lines.forEach(line => {
+            textures.forEach(texture => {
+                const key = `${line}-${texture}`;
+                fabricTextures[key] = { 
+                    path: `textures/${line}/${texture}/albedo.jpg`,
+                    color: colorMap[texture],
+                    roughness: getRoughnessByLine(line)
+                };
+            });
+        });
+
+        function getRoughnessByLine(line) {
+            const roughnessMap = {
+                'boucle': 0.8,
+                'veludinho': 0.3,
+                'jaguar': 0.6,
+                'silver': 0.4,
+                'confort': 0.7,
+                'belga': 0.5,
+                'microside': 0.6,
+                'diamond': 0.2
+            };
+            return roughnessMap[line] || 0.5;
+        }
+
+        const loadedTextures = {};
+
+        // Função para criar sofá
+        function createDemoSofa() {
+            const sofaGroup = new THREE.Group();
+            const fabricMeshes = [];
+            
+            const seatMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                roughness: 0.7,
+                metalness: 0.05
+            });
+
+            const seatGeometry = new THREE.BoxGeometry(4, 0.5, 2);
+            const seat = new THREE.Mesh(seatGeometry, seatMaterial);
+            seat.position.y = 0.5;
+            seat.castShadow = true;
+            sofaGroup.add(seat);
+            fabricMeshes.push(seat);
+
+            const backGeometry = new THREE.BoxGeometry(4, 1.4, 0.35);
+            const back = new THREE.Mesh(backGeometry, seatMaterial);
+            back.position.set(0, 1.2, -0.85);
+            back.castShadow = true;
+            sofaGroup.add(back);
+            fabricMeshes.push(back);
+
+            const armGeometry = new THREE.BoxGeometry(0.35, 1, 2);
+            const armLeft = new THREE.Mesh(armGeometry, seatMaterial);
+            armLeft.position.set(-2, 0.75, 0);
+            armLeft.castShadow = true;
+            sofaGroup.add(armLeft);
+            fabricMeshes.push(armLeft);
+
+            const armRight = new THREE.Mesh(armGeometry, seatMaterial);
+            armRight.position.set(2, 0.75, 0);
+            armRight.castShadow = true;
+            sofaGroup.add(armRight);
+            fabricMeshes.push(armRight);
+
+            const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.35, 16);
+            const legMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2a2a2a, 
+                metalness: 0.4,
+                roughness: 0.6 
+            });
+            
+            const legPositions = [
+                [-1.6, 0.175, 0.8],
+                [1.6, 0.175, 0.8],
+                [-1.6, 0.175, -0.8],
+                [1.6, 0.175, -0.8]
+            ];
+            
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(...pos);
+                leg.castShadow = true;
+                sofaGroup.add(leg);
+            });
+
+            sofaGroup.userData.fabricMeshes = fabricMeshes;
+            return sofaGroup;
+        }
+
+        sofaMesh = createDemoSofa();
+        scene.add(sofaMesh);
+
+        const floorGeometry = new THREE.PlaneGeometry(20, 20);
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Controles de mouse
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: 0, y: 0 };
+        let autoRotate = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                rotation.y += deltaX * 0.005;
+                rotation.x += deltaY * 0.005;
+                rotation.x = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, rotation.x));
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const distance = camera.position.length();
+            const newDistance = distance + (e.deltaY > 0 ? zoomSpeed : -zoomSpeed);
+            const clampedDistance = Math.max(3, Math.min(10, newDistance));
+            camera.position.multiplyScalar(clampedDistance / distance);
+        });
+
+        // Função para trocar textura
+        function changeTexture(line, textureName) {
+            const textureKey = `${line}-${textureName}`;
+            const fabricConfig = fabricTextures[textureKey];
+            
+            if (!fabricConfig) {
+                console.warn(`Configuração não encontrada para: ${textureKey}`);
+                return;
+            }
+
+            if (loadedTextures[textureKey]) {
+                applyTextureToSofa(loadedTextures[textureKey], fabricConfig);
+            } else {
+                textureLoader.load(
+                    fabricConfig.path,
+                    (texture) => {
+                        texture.wrapS = THREE.RepeatWrapping;
+                        texture.wrapT = THREE.RepeatWrapping;
+                        texture.repeat.set(1, 1);
+                        
+                        loadedTextures[textureKey] = texture;
+                        applyTextureToSofa(texture, fabricConfig);
+                    },
+                    undefined,
+                    (error) => {
+                        console.log(`Textura não encontrada: ${fabricConfig.path}`);
+                        applyTextureToSofa(null, fabricConfig);
+                    }
+                );
+            }
+        }
+
+        function applyTextureToSofa(texture, fabricConfig) {
+            if (sofaMesh.userData.fabricMeshes) {
+                sofaMesh.userData.fabricMeshes.forEach(mesh => {
+                    if (texture) {
+                        mesh.material.map = texture;
+                        mesh.material.color.setHex(0xffffff);
+                    } else {
+                        mesh.material.map = null;
+                        mesh.material.color.setHex(fabricConfig.color);
+                    }
+                    mesh.material.roughness = fabricConfig.roughness;
+                    mesh.material.needsUpdate = true;
+                });
+            }
+        }
+
+        // Event listener para o dropdown
+        document.getElementById('fabricLineDropdown').addEventListener('change', function() {
+            const selectedLine = this.value;
+            
+            // Esconde todas as opções de textura
+            document.querySelectorAll('.texture-options').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            // Mostra as texturas da linha selecionada
+            const textureOptions = document.getElementById(`textures-${selectedLine}`);
+            if (textureOptions) {
+                textureOptions.classList.add('active');
+                
+                // Ativa a primeira textura da linha
+                const firstTexture = textureOptions.querySelector('.texture-btn');
+                if (firstTexture) {
+                    document.querySelectorAll('.texture-btn').forEach(t => t.classList.remove('active'));
+                    firstTexture.classList.add('active');
+                    changeTexture(selectedLine, firstTexture.dataset.texture);
+                }
+            }
+        });
+
+        // Event listeners para texturas
+        document.querySelectorAll('.texture-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const line = btn.dataset.line;
+                const texture = btn.dataset.texture;
+                
+                // Remove active de todas as texturas da mesma linha
+                document.querySelectorAll(`.texture-btn[data-line="${line}"]`).forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                btn.classList.add('active');
+                changeTexture(line, texture);
+            });
+        });
+
+        // Controles
+        document.getElementById('resetCamera').addEventListener('click', () => {
+            rotation = { x: 0, y: 0 };
+            camera.position.set(4, 2, 4);
+            camera.lookAt(0, 0.5, 0);
+        });
+
+        document.getElementById('toggleRotation').addEventListener('click', () => {
+            autoRotate = !autoRotate;
+        });
+
+        document.getElementById('fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                canvas.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Animação
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (autoRotate) {
+                rotation.y += 0.005;
+            }
+            
+            if (sofaMesh) {
+                sofaMesh.rotation.y = rotation.y;
+                sofaMesh.rotation.x = rotation.x;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Responsividade
+        window.addEventListener('resize', () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            setTimeout(() => {
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            }, 100);
+        });
+
+        // Iniciar
+        document.getElementById('loading').style.display = 'none';
+        
+        // Aplicar textura inicial
+        changeTexture('boucle', 'rosa-velho');
+        
+        animate();
+    </script>
+</body>
+</html>
